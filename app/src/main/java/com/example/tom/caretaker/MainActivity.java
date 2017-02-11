@@ -10,6 +10,26 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+
+import java.net.UnknownHostException;
+
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import com.mongodb.ServerAddress;
+
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoCollection;
+
+import org.bson.Document;
+import java.util.Arrays;
+import com.mongodb.Block;
+
+import com.mongodb.client.MongoCursor;
+import static com.mongodb.client.model.Filters.*;
+import com.mongodb.client.result.DeleteResult;
+import static com.mongodb.client.model.Updates.*;
+import com.mongodb.client.result.UpdateResult;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     @Override
@@ -18,22 +38,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         //TODO: get tasks from database.. Pseudocode below
-        Cursor cursor = db.query("SELECT * FROM tasks WHERE complete=false");
-
+        MongoClientURI uri  = new MongoClientURI("mongodb://cyberleaders:cyberleaders2017@ds145299.mlab.com:45299/caregiver");
+        MongoClient client = new MongoClient(uri);
+        MongoDatabase db = client.getDatabase(uri.getDatabase());
+        MongoCollection<Document> tasks = db.getCollection("taskschemas");
+        MongoCursor<Document> cursor = tasks.find().iterator();
         RelativeLayout rl = (RelativeLayout) findViewById(R.id.activity_main);
-        while (cursor.moveToNext()) {
-            String title = cursor.getString(
-                    cursor.getColumnIndexOrThrow(DatabaseExampleContract.ExampleEntry.COLUMN_NAME_TITLE)
-            );
+        while (cursor.hasNext()) {
+            Document doc = cursor.next();
+            String title = (String) doc.get("name");
+            int id = (int) doc.get("_id");
             TextView tv = new TextView(this);
-            tv.setId(cursor.getString(
-                    cursor.getColumnIndexOrThrow(DatabaseExampleContract.ExampleEntry.COLUMN_NAME_ID)));
+            tv.setId(id);
             tv.setText(title);
             tv.setTextColor(Color.BLACK);
 
             Button button = new Button(this);
-            button.setId(cursor.getString(
-                    cursor.getColumnIndexOrThrow(DatabaseExampleContract.ExampleEntry.COLUMN_NAME_ID)));
+            button.setId(id);
             button.setText(R.string.button_complete);
             button.setOnClickListener(this);
             rl.addView(tv);
@@ -44,9 +65,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         //TODO: Remove from database
         //PLEASE SHOW UP ON GITHUB
-        db.query("DELETE FROM table_name WHERE id=" + v.getId());
+        MongoClientURI uri  = new MongoClientURI("mongodb://cyberleaders:cyberleaders2017@ds145299.mlab.com:45299/caregiver");
+        MongoClient client = new MongoClient(uri);
+        MongoDatabase db = client.getDatabase(uri.getDatabase());
         RelativeLayout rl = (RelativeLayout) findViewById(R.id.activity_main);
-        r1.
     }
 
 }
