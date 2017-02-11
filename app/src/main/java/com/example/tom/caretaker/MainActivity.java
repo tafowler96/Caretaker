@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void onClick(View v) {
         //TODO: Remove from database
+        //PLEASE SHOW UP ON GITHUB
         db.query("DELETE FROM table_name WHERE id=" + v.getId());
         RelativeLayout rl = (RelativeLayout) findViewById(R.id.activity_main);
         r1.
